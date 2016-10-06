@@ -2,7 +2,7 @@ require 'hiera'
 class Hiera
   module Backend
     class Yamll_backend
-      VERSION = "0.1.0"
+      VERSION = "0.2.0"
       # This is left blank because we are hacking hiera backend logic
       # to get around a limitation of hiera where you cannot have
       # multiple backends of the same type.
