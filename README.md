@@ -20,7 +20,6 @@ Or install it yourself as:
     $ gem install hiera-yamll
 
 ## Usage
-
 Install this gem along side your hiera installation in order to use this backend.
 
 ## Development
