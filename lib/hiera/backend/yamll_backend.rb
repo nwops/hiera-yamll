@@ -2,7 +2,7 @@ require 'hiera'
 class Hiera
   module Backend
     class Yamll_backend
-      VERSION = "0.3.0"
+      VERSION = "0.3.1"
       # This is left blank because we are hacking hiera backend logic
       # to get around a limitation of hiera where you cannot have
       # multiple backends of the same type.
@@ -19,6 +19,7 @@ class Hiera
       def lookup(key, scope, order_override, resolution_type, context=nil)
         answer = nil
         found = false
+        newer_hiera_version = Hiera::VERSION >= '3.0.0'
 
         Hiera.debug("Looking up #{key} in YAMLL backend")
         Backend.datasourcefiles(:yamll, scope, "yaml", order_override) do |source, yamlfile|
@@ -41,7 +42,7 @@ class Hiera
           # the array
           #
           # for priority searches we break after the first found data item
-          if context
+          if newer_hiera_version
             # versions of newer hiera use a context
             new_answer = Backend.parse_answer(data[key], scope, {}, context)
           else
@@ -55,7 +56,7 @@ class Hiera
           when :hash
             raise Exception, "Hiera type mismatch for key '#{key}': expected Hash and got #{new_answer.class}" unless new_answer.kind_of? Hash
             answer ||= {}
-            if context
+            if newer_hiera_version
               answer = Backend.merge_answer(new_answer, answer, resolution_type)
             else
               answer = Backend.merge_answer(new_answer, answer)
@@ -65,7 +66,9 @@ class Hiera
             break
           end
         end
-        throw :no_such_key unless found
+        if newer_hiera_version
+          throw :no_such_key unless found
+        end
         return answer
       end
     end
